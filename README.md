@@ -22,13 +22,13 @@ differential expression, and a stability check.
    Used **10 PCs**: the variance curve drops sharply by about PC 6-8 and is flat after about PC 10.
 4. **Clustering.** Leiden at four resolutions gave **6 / 9 / 11 / 15 clusters** (0.2 / 0.5 / 0.8 / 1.2).
    I chose **0.5 (9 clusters)** because it is the lowest resolution that separates all the expected PBMC populations
-   (at 0.2, NK and CD8 T cells merge and the monocyte groups are not split); at 0.8 and 1.2 the T/NK region breaks into many
-   small groups that I did not test further.
+   (at 0.2, the two CD4 T clusters merge into one, NK and CD8 T cells merge, and the two monocyte groups are not split);
+   at 0.8 and 1.2 the T/NK region breaks into many small groups that I did not test further.
 5. **Annotation.** Marker genes per cluster (Wilcoxon rank-sum) checked on a dotplot:
 
 | Cell type | Main markers seen | % of cells |
 |---|---|---|
-| CD4 T (2 clusters) | IL7R, LTB, CD3D (CCR7 higher in the second cluster) | 43.6 |
+| CD4 T (2 clusters, see item 7) | IL7R, LTB, CD3D | 43.6 |
 | CD14+ monocyte | LYZ, S100A8/9, CD14 | 16.2 |
 | B | MS4A1, CD79A, CD74 | 12.6 |
 | CD8 T | CCL5, NKG7, GZMA, CD8A/B (weak) | 12.1 |
@@ -39,14 +39,28 @@ differential expression, and a stability check.
 
 6. **Differential expression: FCGR3A+ vs CD14+ monocytes.** Top genes: FCGR3A (log fold change 6.1, adjusted p = 4e-64),
    IFITM2, LST1, FCER1G, MS4A7. This matches the known profile of CD16+ (non-classical) monocytes.
-7. **Stability.** Re-running neighbors + Leiden with 5 other seeds always gave 9 clusters, with adjusted Rand index
+7. **CD4 T sub-clusters (731 and 401 cells).**
+   - *Quality check:* the smaller cluster (1) has fewer genes (median 694 vs 868) and counts (2,019 vs 2,508); mitochondrial
+     content is similar (1.9% vs 1.7%).
+   - *Differential expression:* cluster 0 is higher in S100A4 and ANXA1 (log fold change about -1.2 for cluster 1 vs 0),
+     S100A11, SRGN, VIM and LTB; cluster 1 is higher in MALAT1 and ribosomal genes, with small fold changes (0.15-0.4).
+   - *Memory vs naive markers:* the memory score is higher in cluster 0 (mean 0.74 vs 0.32). Naive markers (CCR7, SELL,
+     TCF7, LEF1) are similar in both clusters (naive score -0.59 vs -0.43), so I call cluster 0 **memory-like** and
+     did **not** label cluster 1 as naive.
+   - *Depth-matched check:* among cells with 1,500-3,000 counts (573 and 298 cells), the memory score difference remains
+     (median 0.80 vs 0.29), so the split is not only a sequencing-depth effect.
+   - *Resolution:* the two clusters are one cluster at resolution 0.2 (731 + 397 cells) and separate at 0.5.
+8. **Stability.** Re-running neighbors + Leiden with 5 other seeds always gave 9 clusters, with adjusted Rand index
    **0.76-0.93 (mean 0.81)** against the reference. The number of clusters is stable; boundaries between neighboring
-   clusters move somewhat.
+   clusters move somewhat. For seed 1 (the most stable seed, ARI 0.93), 1,086 of the 1,132 CD4 T cells (95.9%) kept the
+   same two-way split.
 
 ## Limitations
 - PBMC 3k is a small, well-known benchmark; the cell types found are expected, not novel.
 - Annotation uses a small set of canonical markers plus manual review. FCGR3A is also expressed by NK cells, so it
   is not specific to monocytes on its own, and CD8A/CD8B signal is weak in this sparse dataset.
-- The two CD4 T clusters were not characterized further (for example naive vs memory), so I did not label them separately.
+- The CD4 T split is memory-like vs lower-memory, based on a small marker set; naive markers were not clearly enriched,
+  and cluster 1 has lower depth, so part of the split may still be technical. The depth check only controls total counts,
+  and the stability of the CD4 split was reported for seed 1 only.
 - Differential-expression p-values are optimistic because the groups were defined from the same data.
 - Scrublet was run with default settings and its expected doublet rate was not tuned.
