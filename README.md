@@ -52,8 +52,9 @@ differential expression, and a stability check.
    - *Resolution:* the two clusters are one cluster at resolution 0.2 (731 + 397 cells) and separate at 0.5.
 8. **Stability.** Re-running neighbors + Leiden with 5 other seeds always gave 9 clusters, with adjusted Rand index
    **0.76-0.93 (mean 0.81)** against the reference. The number of clusters is stable; boundaries between neighboring
-   clusters move somewhat. For seed 1 (the most stable seed, ARI 0.93), 1,086 of the 1,132 CD4 T cells (95.9%) kept the
-   same two-way split.
+   clusters move somewhat. For the CD4 T cells (1,132), the same two-way split was recovered
+   for **79.5-95.9% of cells across the 5 seeds (mean 84.7%)**: seed 1 (ARI 0.93, the most stable) 95.9%, seeds 2-5 79.5-82.8%.
+   So the CD4 split is reproducible in direction but its boundary moves for roughly 1 in 6 cells.
 
 9. **Cross-check in R (Seurat).** Same data, thresholds (200-2,500 genes, < 5% mito), 10 PCs and resolution 0.5
    (`seurat_pbmc3k.R`). Seurat found **9 clusters / the same 8 cell types** (2,638 cells; it did not remove doublets).
@@ -72,7 +73,7 @@ differential expression, and a stability check.
   is not specific to monocytes on its own, and CD8A/CD8B signal is weak in this sparse dataset.
 - The CD4 T split is memory-like vs lower-memory, based on a small marker set; naive markers were not clearly enriched,
   and cluster 1 has lower depth, so part of the split may still be technical. The depth check only controls total counts,
-  and the stability of the CD4 split was reported for seed 1 only.
+  and its boundary is not fixed: across 5 seeds, 79.5-95.9% of CD4 T cells keep the same split.
 - The CD4 T split is only partly reproduced across tools (about 71% of CD4 T cells); treat it as a tentative naive-like vs
   memory-like gradient, not two sharply separated populations (they form one connected region on the UMAP).
 - The Seurat run did not remove doublets, so cell counts differ slightly between the two analyses.
