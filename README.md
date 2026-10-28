@@ -55,6 +55,17 @@ differential expression, and a stability check.
    clusters move somewhat. For seed 1 (the most stable seed, ARI 0.93), 1,086 of the 1,132 CD4 T cells (95.9%) kept the
    same two-way split.
 
+9. **Cross-check in R (Seurat).** Same data, thresholds (200-2,500 genes, < 5% mito), 10 PCs and resolution 0.5
+   (`seurat_pbmc3k.R`). Seurat found **9 clusters / the same 8 cell types** (2,638 cells; it did not remove doublets).
+   On the 2,595 cells shared with the Scanpy analysis:
+   - Cell-type labels agree for **96.3%** of cells (adjusted Rand index **0.94**, CD4 naive + memory merged into CD4 T).
+     Most disagreements are FCGR3A+ vs CD14+ monocytes (45 cells) and CD8 T vs CD4 T (31 cells).
+   - Cluster-level ARI (9 vs 9 clusters) is lower, **0.66**, mainly because of how the CD4 T cells are split.
+   - **CD4 T split:** Seurat separates *naive* (CCR7, LEF1, TCF7 high; 673 cells) from *memory* (IL7R, CD40LG, AQP3; 455 cells).
+     Of Scanpy's lower-memory cluster (401 cells), 373 (93%) are Seurat naive; of Seurat memory cells, 428 of 455 (94%) are in
+     Scanpy's memory-like cluster. But Scanpy's memory-like cluster also holds 300 Seurat-naive cells, so the two tools agree
+     on the direction of the split for about 71% of CD4 T cells, not on its exact boundary.
+
 ## Limitations
 - PBMC 3k is a small, well-known benchmark; the cell types found are expected, not novel.
 - Annotation uses a small set of canonical markers plus manual review. FCGR3A is also expressed by NK cells, so it
@@ -62,5 +73,8 @@ differential expression, and a stability check.
 - The CD4 T split is memory-like vs lower-memory, based on a small marker set; naive markers were not clearly enriched,
   and cluster 1 has lower depth, so part of the split may still be technical. The depth check only controls total counts,
   and the stability of the CD4 split was reported for seed 1 only.
+- The CD4 T split is only partly reproduced across tools (about 71% of CD4 T cells); treat it as a tentative naive-like vs
+  memory-like gradient, not two sharply separated populations (they form one connected region on the UMAP).
+- The Seurat run did not remove doublets, so cell counts differ slightly between the two analyses.
 - Differential-expression p-values are optimistic because the groups were defined from the same data.
 - Scrublet was run with default settings and its expected doublet rate was not tuned.
